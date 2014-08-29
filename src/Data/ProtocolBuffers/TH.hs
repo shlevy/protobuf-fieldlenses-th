@@ -1,14 +1,12 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# OPTIONS -fno-warn-name-shadowing #-}
+{-# OPTIONS -fno-warn-unused-binds #-}
 
 module Data.ProtocolBuffers.TH where
 
-import Control.Applicative
 import Control.Monad
-import Control.Monad.Trans
 
-import Data.Char
 import Data.Maybe
-import Data.ProtocolBuffers (field)
 
 -- template haskell
 import Language.Haskell.TH
@@ -16,8 +14,6 @@ import Language.Haskell.TH.Syntax
 
 -- lens package
 import Control.Lens
-import Control.Lens.TH
-import Language.Haskell.TH.Lens
 
 makeFieldLenses :: Quasi m => Name -> m [Dec]
 makeFieldLenses name = runQ $ do
@@ -34,7 +30,9 @@ makeFieldLenses name = runQ $ do
 
   toFields :: [Dec] -> Q [Dec]
   toFields decs = fmap catMaybes . forM decs $ \dec -> do
-    maybe (mkFun dec) (return . Just) =<< mkSig dec
+    mkSig dec
+    >>= maybe (mkFun        dec ) (return . Just)
+    >>= maybe (return (Just dec)) (return . Just)
 
   mkSig :: Dec -> Q (Maybe Dec)
   mkSig (SigD n (ForallT a b (AppT (AppT _iso tyT) aT))) = do
