@@ -1,6 +1,4 @@
 {-# LANGUAGE TemplateHaskell #-}
-{-# OPTIONS -fno-warn-name-shadowing #-}
-{-# OPTIONS -fno-warn-unused-binds #-}
 
 module Data.ProtocolBuffers.TH where
 
@@ -15,6 +13,8 @@ import Language.Haskell.TH.Syntax
 -- lens package
 import Control.Lens
 
+import Data.ProtocolBuffers
+
 makeFieldLenses :: Quasi m => Name -> m [Dec]
 makeFieldLenses name = runQ $ do
 
@@ -24,7 +24,7 @@ makeFieldLenses name = runQ $ do
   -- generate "normal . field" lens
   fields <- toFields lenses
 
-  return $ fields
+  return fields
 
  where
 
@@ -36,20 +36,14 @@ makeFieldLenses name = runQ $ do
 
   mkSig :: Dec -> Q (Maybe Dec)
   mkSig (SigD n (ForallT a b (AppT (AppT _iso tyT) aT))) = do
-    mfieldT <- lookupTypeName "Data.ProtocolBuffers.FieldType"
-    mlensT  <- lookupTypeName "Control.Lens.Lens'"
-    case (mfieldT, mlensT) of
-      (Just fieldT, Just lensT) -> return $ Just $
-        SigD n (ForallT a b (AppT (AppT (ConT lensT) tyT) (AppT (ConT fieldT) aT)))
-      _ -> return Nothing
+    ty <- [t| Lens' $(return tyT) (FieldType $(return aT)) |]
+    return $ Just $
+      SigD n (ForallT a b ty)
   mkSig _ = return Nothing
 
   mkFun :: Dec -> Q (Maybe Dec)
-  mkFun (FunD n _) = do
-    mfield <- lookupValueName "Data.ProtocolBuffers.field"
-    case mfield of
-      Just fieldN -> do
-        [dec] <- [d| $(varP n) = $(varE n) . $(varE fieldN) |]
-        return $ Just dec
-      _ -> return Nothing
+  mkFun (FunD n [Clause [] (NormalB f) []]) = do
+    body <- [| $(return f) . field |]
+    return $ Just $
+      FunD n [Clause [] (NormalB body) []]
   mkFun _ = return Nothing
