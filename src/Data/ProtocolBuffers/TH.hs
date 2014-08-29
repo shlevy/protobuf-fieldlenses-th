@@ -3,7 +3,6 @@
 module Data.ProtocolBuffers.TH where
 
 import Control.Monad
-
 import Data.Maybe
 
 -- template haskell
@@ -13,6 +12,7 @@ import Language.Haskell.TH.Syntax
 -- lens package
 import Control.Lens
 
+-- protobuf package
 import Data.ProtocolBuffers
 
 makeFieldLenses :: Quasi m => Name -> m [Dec]
