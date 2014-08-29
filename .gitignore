@@ -1,4 +1,4 @@
 dist/
-
+.hs_tags
 *.swp
 *.swo
