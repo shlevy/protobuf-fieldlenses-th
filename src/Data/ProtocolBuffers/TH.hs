@@ -7,7 +7,6 @@ import Data.Maybe
 
 -- template haskell
 import Language.Haskell.TH
-import Language.Haskell.TH.Syntax
 
 -- lens package
 import Control.Lens
@@ -15,8 +14,8 @@ import Control.Lens
 -- protobuf package
 import Data.ProtocolBuffers
 
-makeFieldLenses :: Quasi m => Name -> m [Dec]
-makeFieldLenses name = runQ $ do
+makeFieldLenses :: Name -> DecsQ
+makeFieldLenses name = do
 
   -- generate "normal" lenses using the lens package
   lenses <- makeLenses name
@@ -42,8 +41,17 @@ makeFieldLenses name = runQ $ do
   mkSig _ = return Nothing
 
   mkFun :: Dec -> Q (Maybe Dec)
+
+  -- the simple case for one type constructor
   mkFun (FunD n [Clause [] (NormalB f) []]) = do
     body <- [| $(return f) . field |]
     return $ Just $
       FunD n [Clause [] (NormalB body) []]
+
+  -- multiple constructors
+  mkFun (FunD _ clauses) = do
+    if length clauses > 1
+      then error "Field lenses do not support multiple data type constructors."
+      else error "Unexpected error generating field lenses."
+
   mkFun _ = return Nothing
