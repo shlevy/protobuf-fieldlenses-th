@@ -43,8 +43,8 @@ makeFieldLenses name = do
   mkFun :: Dec -> Q (Maybe Dec)
 
   -- the simple case for one type constructor
-  mkFun (FunD n [Clause [] (NormalB f) []]) = do
-    body <- [| $(return f) . field |]
+  mkFun (FunD n [Clause p (NormalB f) []]) = do
+    body <- [| $(return (LamE p f)) . field |]
     return $ Just $
       FunD n [Clause [] (NormalB body) []]
 
