@@ -4,30 +4,35 @@
 name:                protobuf-fieldlenses-th
 version:             0.1.0.0
 synopsis:            Template Haskell functions for generating protobuf field lenses
--- description:         
 license:             MIT
 license-file:        LICENSE
 author:              Nils Schweinsberg
 maintainer:          mail@nils.cc
--- copyright:           
 category:            Language
 build-type:          Simple
--- extra-source-files:  
 cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
+
   default-language:    Haskell2010
-  exposed-modules:     
-    Data.ProtocolBuffers.TH
-  -- other-modules:       
-  -- other-extensions:    
-  build-depends:       base >=4.7 && <4.8,
-                       lens, template-haskell,
-                       protobuf
+
+  exposed-modules:     Data.ProtocolBuffers.TH
+
+  build-depends:       base             >=4.8    && <4.9,
+                       lens             >=4.11   && <4.12,
+                       protobuf         >= 0.2.1 && <0.3,
+                       template-haskell >=2.10   && <2.11
 
 test-suite build
   default-language:     Haskell2010
+
   type:                 exitcode-stdio-1.0
+
   main-is:              test/Test.hs
-  build-depends:        base, text, protobuf, protobuf-fieldlenses-th
+
+  build-depends:        base                     >=4.8     && <4.9,
+                        lens                     >=4.11    && <4.12,
+                        protobuf                 >= 0.2.1  && <0.3,
+                        protobuf-fieldlenses-th,
+                        text                     >=1.2.1.1 && <1.3
