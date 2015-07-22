@@ -20,7 +20,7 @@ library
   exposed-modules:     Data.ProtocolBuffers.TH
 
   build-depends:       base             >=4.8    && <4.9,
-                       lens             >=4.11   && <4.12,
+                       lens             >=4.11   && <4.13,
                        protobuf         >= 0.2.1 && <0.3,
                        template-haskell >=2.10   && <2.11
 
@@ -32,7 +32,7 @@ test-suite build
   main-is:              test/Test.hs
 
   build-depends:        base                     >=4.8     && <4.9,
-                        lens                     >=4.11    && <4.12,
+                        lens                     >=4.11    && <4.13,
                         protobuf                 >= 0.2.1  && <0.3,
                         protobuf-fieldlenses-th,
                         text                     >=1.2.1.1 && <1.3
